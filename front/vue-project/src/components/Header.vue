@@ -1,7 +1,7 @@
 <script setup>
   const props = defineProps({
-    title: "",
-    menuItem : [],
+    title: String,
+    menuItem : Array,
   })
 
 

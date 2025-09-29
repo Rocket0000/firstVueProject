@@ -1,31 +1,51 @@
 <script setup>
-import { onMounted } from "vue";
-import { GridView, LocalDataProvider } from 'realgrid';
+import { onMounted, defineEmits, watch, onUpdated } from "vue";
+import { GridView, LocalDataProvider } from "realgrid";
+import key from "/public/realGridLicenseKey.js";
 
-  const dataProvider = ref(null);
-  const gridView = ref(null);
+  const props = defineProps({ 
+    gridId: String,
+    gridRoot: {
+      type: String,
+      default: "/"
+    },
+    columnItems: Array,
+    rowItems: Array,
+    fields: Array,
+    className: String
+  })
 
-  const props = defineProps({
-    gridId: "",
-    gridRoot: "",
-    columnItems: [],
-    rowItems: [],
-    fields: []
+  let gridView = null;
+  let dataProvider = null;
+
+  const emit = defineEmits(["gridData"]);
+
+  onMounted(() => {
+    key;
   })
 
   onMounted(() => {
-    dataProvider.value = new LocalDataProvider(false);
-    gridView.value = new GridView(gridId);
+    dataProvider = new LocalDataProvider(false);
+    gridView = new GridView(props.gridId);
 
-    gridView.value.setDataSource(dataProvider.value);
-    dataProvider.value.setFields(fields);
-    gridView.value.setColumns(columnItems);
-    dataProvider.value.setRows(rowItems);
+    gridView.setDataSource(dataProvider);
+    dataProvider.setFields(props.fields);
+    gridView.setColumns(props.columnItems);
+    dataProvider.setRows(props.rowItems);
+
+    emit("gridData", dataProvider, gridView);
   })
+
+  watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow ]) => {
+    dataProvider.setFields(newField);
+    gridView.setColumns(newCol);
+    dataProvider.setRows(newRow);
+  })
+
 </script>
 
 
 <template>
-  <div id="{{girdId}}"></div>
+  <div :id="gridId" :class="className"></div>
 </template>
 

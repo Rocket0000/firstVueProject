@@ -27,5 +27,6 @@ coverage
 *.sln
 *.sw?
 .env
+/public/realGridLLicenseKey.js
 
 *.tsbuildinfo
