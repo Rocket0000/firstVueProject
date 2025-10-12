@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineEmits, watch, onUpdated } from "vue";
+import { onMounted, defineEmits, watch } from "vue";
 import { GridView, LocalDataProvider } from "realgrid";
 import key from "/public/realGridLicenseKey.js";
 
@@ -55,12 +55,16 @@ import key from "/public/realGridLicenseKey.js";
     dataProvider.setRows(newRow);
   })
 
+
+  function addRow(){
+    gridView.beginInsertRow(0);
+  }
 </script>
 
 
 <template>
   <div class="btn_box">
-    <button type="button" v-if="isAdding">추가</button>
+    <button type="button" v-if="isAdding" @click="addRow">추가</button>
     <button type="button" v-if="isSaving">저장</button>
     <button type="button" v-if="isDeleting">삭제</button>
   </div>
@@ -70,6 +74,9 @@ import key from "/public/realGridLicenseKey.js";
 <style>
   .btn_box{
     display: flex;
+    justify-content: flex-end;
     align-items: center;
+    gap: 5px;
+    margin-bottom: 20px;
   }
 </style>
