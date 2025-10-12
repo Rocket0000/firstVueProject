@@ -68,7 +68,7 @@ function filteringData(){
       </div>
     </div>
   </div>
-  <Modal :isOpen="isOpen" title="해당 검색어가 없습니다."/>
+  <Modal v-model="isOpen" title="해당 검색어가 없습니다."/>
 </template>
 
 <style>

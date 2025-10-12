@@ -11,8 +11,21 @@ import key from "/public/realGridLicenseKey.js";
     },
     columnItems: Array,
     rowItems: Array,
+    className: String,
     fields: Array,
-    className: String
+    isAdding : {
+      type: Boolean,
+      default: true
+    },
+    isDeleting: {
+      type: Boolean,
+      default: true
+    },
+    isSaving: {
+      type: Boolean,
+      default: true
+    },
+
   })
 
   let gridView = null;
@@ -46,6 +59,17 @@ import key from "/public/realGridLicenseKey.js";
 
 
 <template>
+  <div class="btn_box">
+    <button type="button" v-if="isAdding">추가</button>
+    <button type="button" v-if="isSaving">저장</button>
+    <button type="button" v-if="isDeleting">삭제</button>
+  </div>
   <div :id="gridId" :class="className"></div>
 </template>
 
+<style>
+  .btn_box{
+    display: flex;
+    align-items: center;
+  }
+</style>

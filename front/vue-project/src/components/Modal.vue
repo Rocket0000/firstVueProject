@@ -10,27 +10,18 @@ const props = defineProps({
     },
     isOpen:{
         type: Boolean,
-        default: false
     }
 })
-const emit = defineEmits(["confirm", "update: isOpen"]);
-
-const innerOpen = ref(props.isOpen);
+const emit = defineEmits(["confirm", "update:isOpen"]);
 
 function isConfirm(){
     emit("confirm");
-    emit("update: isOpen", false);
-    innerOpen.value = false;
+    isOpen.value = false;
 }
 
-function isCancel(){
-    emit("update: isOpen", false);
-    innerOpen.value = false;
+function isCancel(){    
+    emit("update:isOpen", false);
 }
-
-watch(() => props.isOpen, (newVal) => {
-    innerOpen.value = newVal
-})
 </script>
 
 <template>
