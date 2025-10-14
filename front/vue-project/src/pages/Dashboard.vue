@@ -19,9 +19,6 @@ const menuItem = [
   }
 ]
 
-let gridView = null;
-let provider = null;
-
 const row_copy = ref(rows);
 const tempRows = ref([...rows]);
 
@@ -32,11 +29,6 @@ const isOpen = ref(false);
 
 function changeInput(val){
   inputText.value = val.value;
-}
-
-function getRealGridFnc(p, v){
-  provider = p;
-  gridView = v;
 }
 
 function filteringData(){
@@ -63,7 +55,6 @@ function filteringData(){
           :columnItems="columns" 
           :fields="fields" 
           :rowItems="tempRows"
-          @gridData="getRealGridFnc" 
           className="dashboard_tb" />
       </div>
     </div>
