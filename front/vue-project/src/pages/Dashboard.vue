@@ -6,6 +6,16 @@ import SearchBar from '@/components/SearchBar.vue';
 import { fields, columns, rows } from '@/asset/dummyData.js';
 import Modal from '@/components/Modal.vue';
 
+
+const SESSION_KEY = "rows.data"
+function loadData(){
+  const row = sessionStorage.getItem(SESSION_KEY);
+
+  if(row) return JSON.parse(row);
+
+  return structuredClone(rows)
+}
+
 let id = 0;
 
 const tbId = "testTable";
@@ -19,8 +29,8 @@ const menuItem = [
   }
 ]
 
-const row_copy = ref(rows);
-const tempRows = ref([...rows]);
+const originRows = ref(loadData());
+const tempRows = ref(originRows.value);
 
 const inputText = ref("");
 
@@ -32,15 +42,23 @@ function changeInput(val){
 }
 
 function filteringData(){
-  tempRows.value = row_copy.value.filter( item => item.Name === inputText.value);
+  const searchRow = originRows.value.filter( item => item.Name === inputText.value);
 
-
-  if(tempRows.value.length === 0){
+  console.log(tempRows.value);
+  if(tempRows.value.length <= 0){
     isOpen.value = true;
-    tempRows.value = [...rows];
+    tempRows.value = [...originRows.value];
     return;
   }
+
+  tempRows.value = [...searchRow]
 }
+
+watch(tempRows, (newVal) => {
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(newVal));
+  originRows.value = [...newVal];
+})
+
 
 </script>
 
@@ -54,12 +72,12 @@ function filteringData(){
           :gridId="tbId" 
           :columnItems="columns" 
           :fields="fields" 
-          :rowItems="tempRows"
+          v-model:rowItems="tempRows"
           className="dashboard_tb" />
       </div>
     </div>
   </div>
-  <Modal v-model="isOpen" title="해당 검색어가 없습니다."/>
+  <Modal v-model:isOpen="isOpen" title="해당 검색어가 없습니다."/>
 </template>
 
 <style>

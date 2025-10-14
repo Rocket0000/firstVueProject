@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineEmits, watch, ref, computed } from "vue";
+import { onMounted, defineEmits, watch, ref } from "vue";
 import { GridView, LocalDataProvider } from "realgrid";
 import key from "/public/realGridLicenseKey.js";
 
@@ -31,15 +31,9 @@ import key from "/public/realGridLicenseKey.js";
   let gridView = null;
   let dataProvider = null;
 
-  // const emit = defineEmits(["data"], []);
+  const emit = defineEmits(["update: rowItems"]);
 
-  const addRowData = ref([]);
-
-  const settingData = ref([]);
-
-  onMounted(() => {
-    key;
-  })
+  const settingData = ref([...props.rowItems]);
 
   onMounted(() => {
     dataProvider = new LocalDataProvider(false);
@@ -55,12 +49,12 @@ import key from "/public/realGridLicenseKey.js";
       appendable: true,
       updatable : true
     });
-  })
+  });
 
   watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow ]) => {
     dataProvider.setFields(newField);
     gridView.setColumns(newCol);
-    dataProvider.setRows(newRow);
+    dataProvider.setRows([...newRow]);
   })
 
   //추가 기능
@@ -69,35 +63,14 @@ import key from "/public/realGridLicenseKey.js";
     dataProvider.insertRow(Math.max(0, row), {});
   }
 
-  const setData = computed({
-    get(){
-      return props.rowItems
-    },
-    set(){
-
-    }
-  }) 
-
   function saveRows(){
+    gridView.commit(true);
+
     let allData = dataProvider.getRows();
 
-    settingData.value = allData.map((item, idx) => ({
-        _idx: idx,
-        data : [...item[idx]]
-    }))
-    console.log(dataProvider);
-
-    // let newRowsIdx = dataProvider.getStateRows("created");
-    // let updateRowsIdx = copyData.filter( (data, idx)=> JSON.stringify(data) !== JSON.stringify(allData[idx]))
-    
-    // let datas = copyData.map( data => ) 
-
-    // dataProvider.updateRows(curr.dataRow, datas, 0);
-    
-    
+    settingData.value = allData.map((_, idx) => gridView.getValues(idx));
+    emit("update:rowItems", settingData.value);    
   }
-
-  
 
   //삭제 기능
   function deleteRows(){

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     title: String,
@@ -10,22 +10,31 @@ const props = defineProps({
     },
     isOpen:{
         type: Boolean,
+        default: false
     }
 })
-const emit = defineEmits(["confirm", "update:isOpen"]);
+const emit = defineEmits(["confirm", "update: isOpen"]);
+
+const innerOpen = ref(props.isOpen);
 
 function isConfirm(){
     emit("confirm");
-    isOpen.value = false;
+    emit("update: isOpen", false);
+    innerOpen.value = false;
 }
 
-function isCancel(){    
-    emit("update:isOpen", false);
+function isCancel(){
+    emit("update: isOpen", false);
+    innerOpen.value = false;
 }
+
+watch(() => props.isOpen, (newVal) => {
+    innerOpen.value = newVal
+})
 </script>
 
 <template>
-    <div class="modal_wrapper" :class="{show: isOpen}">
+    <div class="modal_wrapper" :class="{show: innerOpen}">
         <div class="modal">
             <h2>{{title}}</h2>
             <p v-if="desc">{{ desc }}</p>

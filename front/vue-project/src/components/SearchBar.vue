@@ -1,5 +1,5 @@
 <script setup>
-  import { computed, ref, defineEmits } from 'vue';
+  import { ref, defineEmits } from 'vue';
 
   const inputText = ref("");
 
