@@ -5,6 +5,8 @@ import Table from '@/components/Table.vue';
 import SearchBar from '@/components/SearchBar.vue';
 import { fields, columns, rows } from '@/asset/dummyData.js';
 import Modal from '@/components/Modal.vue';
+/** 할일 검색 기능 확인 및 삭제기능 하기 */
+
 
 //세션 지우고 api 호출해야함
 const SESSION_KEY = "rows.data"
