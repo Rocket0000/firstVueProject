@@ -74,17 +74,17 @@ import key from "/public/realGridLicenseKey.js";
       return props.rowItems
     },
     set(){
-      settingData.value = props.rowItems.map((item, idx) => ({
-        _idx: idx,
-        data : [...item[idx]]
-      }))
+
     }
   }) 
 
   function saveRows(){
     let allData = dataProvider.getRows();
-    let copyData = [...props.rowItems];
 
+    settingData.value = allData.map((item, idx) => ({
+        _idx: idx,
+        data : [...item[idx]]
+    }))
     console.log(dataProvider);
 
     // let newRowsIdx = dataProvider.getStateRows("created");
