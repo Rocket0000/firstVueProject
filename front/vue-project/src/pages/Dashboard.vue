@@ -6,7 +6,7 @@ import SearchBar from '@/components/SearchBar.vue';
 import { fields, columns, rows } from '@/asset/dummyData.js';
 import Modal from '@/components/Modal.vue';
 
-
+//세션 지우고 api 호출해야함
 const SESSION_KEY = "rows.data"
 function loadData(){
   const row = sessionStorage.getItem(SESSION_KEY);
@@ -44,7 +44,6 @@ function changeInput(val){
 function filteringData(){
   const searchRow = originRows.value.filter( item => item.Name === inputText.value);
 
-  console.log(tempRows.value);
   if(tempRows.value.length <= 0){
     isOpen.value = true;
     tempRows.value = [...originRows.value];
@@ -55,6 +54,7 @@ function filteringData(){
 }
 
 watch(tempRows, (newVal) => {
+  //세션 지우고 api 호출해야함
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(newVal));
   originRows.value = [...newVal];
 })
