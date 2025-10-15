@@ -9,7 +9,9 @@ import Modal from '@/components/Modal.vue';
 
 
 //세션 지우고 api 호출해야함
-const SESSION_KEY = "rows.data"
+const SESSION_KEY = "rows.data";
+// const COPY_SESSION_KEY = "rows.copy";
+
 function loadData(){
   const row = sessionStorage.getItem(SESSION_KEY);
 
@@ -34,6 +36,8 @@ const menuItem = [
 const originRows = ref(loadData());
 const tempRows = ref(originRows.value);
 
+const searchRow = ref(null);
+
 const inputText = ref("");
 
 const isOpen = ref(false);
@@ -44,21 +48,29 @@ function changeInput(val){
 }
 
 function filteringData(){
-  const searchRow = originRows.value.filter( item => item.Name === inputText.value);
+  // searchRow.value = originRows.value.filter( item => item.Name === inputText.value);
 
-  if(tempRows.value.length <= 0){
-    isOpen.value = true;
-    tempRows.value = [...originRows.value];
-    return;
-  }
+  // if(inputText?.value === ""){
+  //   tempRows.value = [...originRows.value];
+  //   return;
+  // }
 
-  tempRows.value = [...searchRow]
+  // if(searchRow?.length === 0){
+  //   isOpen.value = true;
+  //   tempRows.value = [...originRows.value];
+  //   return;
+  // }
+
+  // tempRows.value = [...searchRow.value];
 }
 
-watch(tempRows, (newVal) => {
+
+
+watch([tempRows], ([newVal, oldVal]) => {
   //세션 지우고 api 호출해야함
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(newVal));
+  // sessionStorage.setItem(COPY_SESSION_KEY, JSON.stringify(newVal));
   originRows.value = [...newVal];
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(originRows.value));
 })
 
 

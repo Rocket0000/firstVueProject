@@ -69,13 +69,26 @@ import key from "/public/realGridLicenseKey.js";
     let allData = dataProvider.getRows();
 
     settingData.value = allData.map((_, idx) => gridView.getValues(idx));
+
     emit("update:rowItems", settingData.value);    
+    //api 호출시 지움
+    sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
   }
 
   //삭제 기능
   function deleteRows(){
-    let isCheckedRows = gridView.getCheckedRows(true, false);
-    dataProvider.removeRows(isCheckedRows);
+    let checkedRowIdx = gridView.getCheckedRows(true, false);
+    let checkedRows = checkedRowIdx.map((_, idx) => gridView.getValues(idx));
+    console.log(settingData.value,",,,,", checkedRows);
+
+    // settingData.value = settingData.value.map()
+    
+    // dataProvider.removeRows(checkedRowIdx);
+
+
+    // emit("update:rowItems", settingData.value);    
+    //api 호출시 지움
+    // sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
   }
 
 </script>
