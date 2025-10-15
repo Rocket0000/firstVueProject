@@ -86,7 +86,7 @@ watch([tempRows], ([newVal, oldVal]) => {
       </div>
     </div>
   </div>
-  <Modal v-model:isOpen="isOpen" title="해당 검색어가 없습니다."/>
+  <Modal v-model:is-open="isOpen" title="해당 검색어가 없습니다."/>
 </template>
 
 <style>
