@@ -13,18 +13,18 @@ const props = defineProps({
         default: false
     }
 })
-const emit = defineEmits(["confirm", "update: isOpen"]);
+const emit = defineEmits(["confirm", "update:isOpen"]);
 
 const innerOpen = ref(props.isOpen);
 
 function isConfirm(){
     emit("confirm");
-    emit("update: isOpen", false);
+    emit("update:isOpen", false);
     innerOpen.value = false;
 }
 
 function isCancel(){
-    emit("update: isOpen", false);
+    emit("update:isOpen", false);
     innerOpen.value = false;
 }
 

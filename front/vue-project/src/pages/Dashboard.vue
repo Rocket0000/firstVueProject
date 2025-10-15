@@ -10,7 +10,7 @@ import Modal from '@/components/Modal.vue';
 
 //세션 지우고 api 호출해야함
 const SESSION_KEY = "rows.data";
-// const COPY_SESSION_KEY = "rows.copy";
+const COPY_SESSION_KEY = "rows.copy";
 
 function loadData(){
   const row = sessionStorage.getItem(SESSION_KEY);
@@ -36,10 +36,7 @@ const menuItem = [
 const originRows = ref(loadData());
 const tempRows = ref(originRows.value);
 
-const searchRow = ref(null);
-
 const inputText = ref("");
-
 const isOpen = ref(false);
 
 
@@ -48,29 +45,27 @@ function changeInput(val){
 }
 
 function filteringData(){
-  // searchRow.value = originRows.value.filter( item => item.Name === inputText.value);
+  const searchValues = originRows.value.filter( item => item.Name === inputText.value);
 
-  // if(inputText?.value === ""){
-  //   tempRows.value = [...originRows.value];
-  //   return;
-  // }
+  if(inputText?.value === ""){
+    tempRows.value = [...originRows.value];
+    return;
+  }
 
-  // if(searchRow?.length === 0){
-  //   isOpen.value = true;
-  //   tempRows.value = [...originRows.value];
-  //   return;
-  // }
-
-  // tempRows.value = [...searchRow.value];
+  if(searchValues?.length === 0){
+    isOpen.value = true;
+    tempRows.value = [...originRows.value];
+  }else{
+    isOpen.value = false;
+    tempRows.value = searchValues;
+  }
 }
 
 
 
 watch([tempRows], ([newVal, oldVal]) => {
   //세션 지우고 api 호출해야함
-  // sessionStorage.setItem(COPY_SESSION_KEY, JSON.stringify(newVal));
-  originRows.value = [...newVal];
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(originRows.value));
+  sessionStorage.setItem(COPY_SESSION_KEY, JSON.stringify(newVal));
 })
 
 
@@ -86,7 +81,7 @@ watch([tempRows], ([newVal, oldVal]) => {
           :gridId="tbId" 
           :columnItems="columns" 
           :fields="fields" 
-          v-model:rowItems="tempRows"
+          v-model:row-items="tempRows"
           className="dashboard_tb" />
       </div>
     </div>

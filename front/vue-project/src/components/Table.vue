@@ -31,9 +31,13 @@ import key from "/public/realGridLicenseKey.js";
   let gridView = null;
   let dataProvider = null;
 
-  const emit = defineEmits(["update: rowItems"]);
+  const emit = defineEmits(["update:rowItems"]);
 
   const settingData = ref([...props.rowItems]);
+
+  onMounted(() => {
+    key
+  })
 
   onMounted(() => {
     dataProvider = new LocalDataProvider(false);
@@ -78,17 +82,15 @@ import key from "/public/realGridLicenseKey.js";
   //삭제 기능
   function deleteRows(){
     let checkedRowIdx = gridView.getCheckedRows(true, false);
-    let checkedRows = checkedRowIdx.map((_, idx) => gridView.getValues(idx));
-    console.log(settingData.value,",,,,", checkedRows);
+    let checkedRows = checkedRowIdx.map( row => gridView.getValues(row));
 
-    // settingData.value = settingData.value.map()
+    settingData.value = settingData.value.filter(obj => !checkedRows.some( obj2 => obj.__rowId == obj2.__rowId));
     
-    // dataProvider.removeRows(checkedRowIdx);
-
-
-    // emit("update:rowItems", settingData.value);    
+    dataProvider.removeRows(checkedRowIdx);
+    console.log(settingData.value)
     //api 호출시 지움
-    // sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
+    emit("update:rowItems", settingData.value);  
+    sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
   }
 
 </script>
