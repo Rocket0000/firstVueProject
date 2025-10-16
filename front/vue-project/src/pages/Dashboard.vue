@@ -1,9 +1,10 @@
 <script setup>
 import { ref, watch } from 'vue';
+import { fields, columns, rows } from '@/asset/dummyData.js';
+import { fields as subFields, columns as subColumns } from '@/asset/dummySubData';
 import Header from '@/components/Header.vue';
 import Table from '@/components/Table.vue';
 import SearchBar from '@/components/SearchBar.vue';
-import { fields, columns, rows } from '@/asset/dummyData.js';
 import Modal from '@/components/Modal.vue';
 /** 할일 검색 기능 확인 및 삭제기능 하기 */
 
@@ -36,9 +37,26 @@ const menuItem = [
 const originRows = ref(loadData());
 const tempRows = ref(originRows.value);
 
+
+
 const inputText = ref("");
 const isOpen = ref(false);
 
+
+const modalProps = {
+  title:"",
+  modalType: "tb",
+  isOpen: false,
+  tbProps: {
+            gridId: "subTb",
+            fields: subFields,
+            columnItems: subColumns,
+            rowItems : [],
+            isAdding: false,
+            isDeleting: false,
+            isSaving: false,
+          }
+}
 
 function changeInput(val){
   inputText.value = val.value;
@@ -82,6 +100,7 @@ watch([tempRows], ([newVal, oldVal]) => {
           :columnItems="columns" 
           :fields="fields" 
           v-model:row-items="tempRows"
+          :m-props="modalProps"
           className="dashboard_tb" />
       </div>
     </div>

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from 'vue';
+import Table from './Table.vue';
 
 const props = defineProps({
     title: String,
@@ -11,11 +12,17 @@ const props = defineProps({
     isOpen:{
         type: Boolean,
         default: false
-    }
+    },
+    modalType: {
+        type: String,
+        default: "default" || undefined
+    },
+    tbProps: Object
 })
-const emit = defineEmits(["confirm", "update:isOpen"]);
 
-const innerOpen = ref(props.isOpen);
+const tableProps = {...props.tbProps}
+const emit = defineEmits(["confirm", "update:isOpen"]);
+const innerOpen = ref(false);
 
 function isConfirm(){
     emit("confirm");
@@ -36,8 +43,18 @@ watch(() => props.isOpen, (newVal) => {
 <template>
     <div class="modal_wrapper" :class="{show: innerOpen}">
         <div class="modal">
-            <h2>{{title}}</h2>
-            <p v-if="desc">{{ desc }}</p>
+            <div v-if="modalType === 'default'">
+                <h2>{{title}}</h2>
+                <p v-if="desc">{{ desc }}</p>
+            </div>
+            <div v-else-if="modalType === 'tb'">
+                <h2>{{title}}</h2>
+                <Table v-bind="tableProps" className="modal_tb"/>
+            </div>
+            <div v-else-if="modalType === 'el'">
+                <h2>{{title}}</h2>
+                <slot/>
+            </div>
             <div v-if="btnType === 'two'" class="btn_box">
                 <button type="button" @click="isConfirm">확인</button>
                 <button type="button" @click="isCancel">취소</button>
@@ -75,6 +92,12 @@ watch(() => props.isOpen, (newVal) => {
     }
     .modal .btn_box{
         text-align: end;
+    }
+
+    .modal_tb{
+        width: 50vw;
+        height: 300px;
+        margin-bottom: 20px;
     }
 
 </style>

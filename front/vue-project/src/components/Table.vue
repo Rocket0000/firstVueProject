@@ -1,7 +1,10 @@
 <script setup>
 import { onMounted, defineEmits, watch, ref } from "vue";
-import { GridView, LocalDataProvider } from "realgrid";
 import key from "/public/realGridLicenseKey.js";
+import { GridView, LocalDataProvider } from "realgrid";
+import Modal from "./Modal.vue";
+
+
 
   const props = defineProps({ 
     gridId: String,
@@ -25,8 +28,10 @@ import key from "/public/realGridLicenseKey.js";
       type: Boolean,
       default: true
     },
-
+    mProps: Object
   })
+  const modalProps = {...props.mProps};
+  const open = ref(modalProps.isOpen);
 
   let gridView = null;
   let dataProvider = null;
@@ -48,11 +53,15 @@ import key from "/public/realGridLicenseKey.js";
     gridView.setColumns(props.columnItems);
     dataProvider.setRows(props.rowItems);
 
+    gridView.displayOptions.emptyMessage = "표시할 데이터 없습니다.";
+    
     gridView.setEditOptions({
       insertable: true,
       appendable: true,
       updatable : true
     });
+
+    openModalDetail();
   });
 
   watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow ]) => {
@@ -60,6 +69,7 @@ import key from "/public/realGridLicenseKey.js";
     gridView.setColumns(newCol);
     dataProvider.setRows([...newRow]);
   })
+
 
   //추가 기능
   function addRows(){
@@ -87,10 +97,28 @@ import key from "/public/realGridLicenseKey.js";
     settingData.value = settingData.value.filter(obj => !checkedRows.some( obj2 => obj.__rowId == obj2.__rowId));
     
     dataProvider.removeRows(checkedRowIdx);
-    console.log(settingData.value)
     //api 호출시 지움
     emit("update:rowItems", settingData.value);  
     sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
+  }
+
+  //grid내 버튼 click
+  function openModalDetail(){
+    gridView.onCellItemClicked = function (grid, idx) {
+      let modalData = grid.getValues(idx.itemIndex);
+
+      //따로 어떻게 처리 할지
+      if(modalProps && modalProps.modalType === "tb"){
+        let settingRows = modalProps.tbProps.rowItems.push(grid.getValues(idx.itemIndex));
+        console.log(settingRows)
+      }
+
+      modalProps.title = modalData.FullName;
+      open.value = true;
+
+      
+      return true;
+    }
   }
 
 </script>
@@ -103,6 +131,7 @@ import key from "/public/realGridLicenseKey.js";
     <button type="button" v-if="isDeleting" @click="deleteRows">삭제</button>
   </div>
   <div :id="gridId" :class="className"></div>
+  <Modal v-bind="modalProps" v-model:is-open="open" />
 </template>
 
 <style>
