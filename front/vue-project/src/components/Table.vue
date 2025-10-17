@@ -16,6 +16,7 @@ import Modal from "./Modal.vue";
     rowItems: Array,
     className: String,
     fields: Array,
+    cellClickFnc: Array,
     isAdding : {
       type: Boolean,
       default: true
@@ -61,15 +62,16 @@ import Modal from "./Modal.vue";
       updatable : true
     });
 
-    openModalDetail();
+    isCellClicked();
   });
 
   watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow ]) => {
     dataProvider.setFields(newField);
     gridView.setColumns(newCol);
     dataProvider.setRows([...newRow]);
-  })
 
+    console.log("newRow:::", newRow);
+  })
 
   //추가 기능
   function addRows(){
@@ -102,25 +104,15 @@ import Modal from "./Modal.vue";
     sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
   }
 
-  //grid내 버튼 click
-  function openModalDetail(){
-    gridView.onCellItemClicked = function (grid, idx) {
-      let modalData = grid.getValues(idx.itemIndex);
+  function isCellClicked(){
+    gridView.onCellItemClicked = function (grid, idx, itemData) {
 
-      //따로 어떻게 처리 할지
-      if(modalProps && modalProps.modalType === "tb"){
-        let settingRows = modalProps.tbProps.rowItems.push(grid.getValues(idx.itemIndex));
-        console.log(settingRows)
+      if (typeof modalProps.fnc === 'function' && modalProps.fnc) {
+          modalProps.fnc(grid, idx, modalProps, open)
       }
 
-      modalProps.title = modalData.FullName;
-      open.value = true;
-
-      
-      return true;
     }
   }
-
 </script>
 
 

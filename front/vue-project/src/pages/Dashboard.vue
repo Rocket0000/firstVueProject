@@ -43,19 +43,32 @@ const inputText = ref("");
 const isOpen = ref(false);
 
 
+
+
 const modalProps = {
   title:"",
   modalType: "tb",
   isOpen: false,
+  fnc: openTbModal,
   tbProps: {
-            gridId: "subTb",
-            fields: subFields,
-            columnItems: subColumns,
-            rowItems : [],
-            isAdding: false,
-            isDeleting: false,
-            isSaving: false,
-          }
+    gridId: "subTb",
+    fields: subFields,
+    columnItems: subColumns,
+    rowItems : [],
+    isAdding: false,
+    isDeleting: false,
+    isSaving: false,
+  }
+}
+
+function openTbModal(grid, idx, props ,state){
+  let modalData = grid.getValues(idx.itemIndex);
+
+  props.tbProps.rowItems.push(grid.getValues(idx.itemIndex))
+
+  props.title = modalData.FullName;
+  state.value = true;
+  return true;
 }
 
 function changeInput(val){
