@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import Table from './Table.vue';
 
 const props = defineProps({
@@ -20,7 +20,7 @@ const props = defineProps({
     tbProps: Object
 })
 
-const tableProps = {...props.tbProps}
+const tableProps = ref({...props.tbProps})
 const emit = defineEmits(["confirm", "update:isOpen"]);
 const innerOpen = ref(false);
 
@@ -35,9 +35,14 @@ function isCancel(){
     innerOpen.value = false;
 }
 
-watch(() => props.isOpen, (newVal) => {
-    innerOpen.value = newVal
+
+watch([() => props.isOpen, () => props.tbProps], ([newVal, newTBVal])=> {
+    innerOpen.value = newVal;
+    if((typeof tableProps !== "undefined" || tableProps != {}) && props.modalType === "tb"){
+        tableProps.value = newTBVal;
+    }
 })
+
 </script>
 
 <template>
@@ -49,7 +54,11 @@ watch(() => props.isOpen, (newVal) => {
             </div>
             <div v-else-if="modalType === 'tb'">
                 <h2>{{title}}</h2>
-                <Table v-bind="tableProps" className="modal_tb"/>
+                <Table 
+                    v-bind="tableProps"
+                    v-model:row-items="tableProps.rowItems"
+                    className="modal_tb"
+                />
             </div>
             <div v-else-if="modalType === 'el'">
                 <h2>{{title}}</h2>

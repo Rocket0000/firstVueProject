@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, defineEmits, watch, ref } from "vue";
+import { onMounted, defineEmits, watch, ref, nextTick } from "vue";
 import key from "/public/realGridLicenseKey.js";
 import { GridView, LocalDataProvider } from "realgrid";
 import Modal from "./Modal.vue";
@@ -29,8 +29,13 @@ import Modal from "./Modal.vue";
       type: Boolean,
       default: true
     },
+    useModal : {
+      type: Boolean,
+      default: true
+    },
     mProps: Object
   })
+  
   const modalProps = {...props.mProps};
   const open = ref(modalProps.isOpen);
 
@@ -43,35 +48,25 @@ import Modal from "./Modal.vue";
 
   onMounted(() => {
     key
-  })
-
-  onMounted(() => {
     dataProvider = new LocalDataProvider(false);
     gridView = new GridView(props.gridId);
 
     gridView.setDataSource(dataProvider);
     dataProvider.setFields(props.fields);
     gridView.setColumns(props.columnItems);
-    dataProvider.setRows(props.rowItems);
-
-    gridView.displayOptions.emptyMessage = "표시할 데이터 없습니다.";
-    
     gridView.setEditOptions({
       insertable: true,
       appendable: true,
       updatable : true
     });
+    dataProvider.setRows(props.rowItems);
 
+    if(props.rowItems.length === 0){
+      gridView.displayOptions.emptyMessage = "표시할 데이터 없습니다.";
+    }
+  
     isCellClicked();
   });
-
-  watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow ]) => {
-    dataProvider.setFields(newField);
-    gridView.setColumns(newCol);
-    dataProvider.setRows([...newRow]);
-
-    console.log("newRow:::", newRow);
-  })
 
   //추가 기능
   function addRows(){
@@ -100,19 +95,25 @@ import Modal from "./Modal.vue";
     
     dataProvider.removeRows(checkedRowIdx);
     //api 호출시 지움
-    emit("update:rowItems", settingData.value);  
+    emit("update:rowItems", settingData.value);
     sessionStorage.setItem("rows.data", JSON.stringify(settingData.value));
   }
 
   function isCellClicked(){
     gridView.onCellItemClicked = function (grid, idx, itemData) {
-
       if (typeof modalProps.fnc === 'function' && modalProps.fnc) {
-          modalProps.fnc(grid, idx, modalProps, open)
+        modalProps.fnc(grid, idx, modalProps, open)
       }
-
     }
   }
+
+  watch([() => props.fields, () => props.columnItems, () => props.rowItems], ([newField, newCol, newRow]) => {
+    dataProvider?.setFields(newField);
+    gridView?.setColumns(newCol);
+    dataProvider?.setRows([...newRow]);
+    settingData.value = newRow;
+  })
+
 </script>
 
 
@@ -123,7 +124,8 @@ import Modal from "./Modal.vue";
     <button type="button" v-if="isDeleting" @click="deleteRows">삭제</button>
   </div>
   <div :id="gridId" :class="className"></div>
-  <Modal v-bind="modalProps" v-model:is-open="open" />
+  <Modal v-if="useModal" v-bind="modalProps" v-model:is-open="open" />
+  <div v-else></div>
 </template>
 
 <style>

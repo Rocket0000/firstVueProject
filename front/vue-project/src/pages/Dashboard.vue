@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { reactive, ref, useModel, watch } from 'vue';
 import { fields, columns, rows } from '@/asset/dummyData.js';
 import { fields as subFields, columns as subColumns } from '@/asset/dummySubData';
 import Header from '@/components/Header.vue';
@@ -45,7 +45,7 @@ const isOpen = ref(false);
 
 
 
-const modalProps = {
+const modalProps = reactive({
   title:"",
   modalType: "tb",
   isOpen: false,
@@ -58,17 +58,23 @@ const modalProps = {
     isAdding: false,
     isDeleting: false,
     isSaving: false,
+    useModal : false
   }
-}
+})
 
 function openTbModal(grid, idx, props ,state){
   let modalData = grid.getValues(idx.itemIndex);
 
-  props.tbProps.rowItems.push(grid.getValues(idx.itemIndex))
+  if(props.tbProps.rowItems.length !== 0){
+    props.tbProps.rowItems = [];
+  } 
+  
+  props.tbProps.rowItems.push(grid.getValues(idx.itemIndex));
 
   props.title = modalData.FullName;
   state.value = true;
-  return true;
+
+  return false;
 }
 
 function changeInput(val){
