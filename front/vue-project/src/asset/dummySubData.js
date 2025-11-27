@@ -43,19 +43,7 @@ export const columns = [
     width: "300",
     header: {
       text: "Email",
-    },
-  },
-  {
-    name: "Detail",
-    fieldName: "Detail",
-    width: "300",
-    header: {
-      text: "Detail",
-    },      
-    editable:false,
-    renderer:{
-      type:"button",
     }
-  },
+  }
 ];
 

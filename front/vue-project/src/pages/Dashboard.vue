@@ -37,13 +37,10 @@ const menuItem = [
 const originRows = ref(loadData());
 const tempRows = ref(originRows.value);
 
-
-
 const inputText = ref("");
 const isOpen = ref(false);
 
-
-
+const testTableObj = {useable: true};
 
 const modalProps = reactive({
   title:"",
@@ -98,8 +95,6 @@ function filteringData(){
   }
 }
 
-
-
 watch([tempRows], ([newVal, oldVal]) => {
   //세션 지우고 api 호출해야함
   sessionStorage.setItem(COPY_SESSION_KEY, JSON.stringify(newVal));
@@ -120,6 +115,7 @@ watch([tempRows], ([newVal, oldVal]) => {
           :fields="fields" 
           v-model:row-items="tempRows"
           :m-props="modalProps"
+          :page-status-bar="testTableObj"
           className="dashboard_tb" />
       </div>
     </div>
