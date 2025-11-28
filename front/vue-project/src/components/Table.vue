@@ -158,7 +158,14 @@ import Pagination from "./Pagination.vue";
     </p>
   </div>
   <div :id="gridId" :class="className"></div>
-  <Pagination/>
+  <div v-if="usePagination">
+    <Pagination 
+      v-model:row-items="settingData"
+      :perVerticalLine="'right'"
+      :pageRange="10"
+      :perOption="[10,20,30]"
+    />
+  </div>
   <Modal v-if="useModal" v-bind="modalProps" v-model:is-open="open" />
   <div v-else></div>
 </template>

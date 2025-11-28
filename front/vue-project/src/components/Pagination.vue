@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     perOption :{
@@ -18,32 +18,47 @@ const props = defineProps({
         type: Number,
         default: 5
     },
-    totalCnt : Number
+    rowItems: {
+        type: Array,
+        default: () => []
+    }
 })
 
+const rows = ref([...props.rowItems]);
+
 const perNum = ref(0);//보여줄 row 수
-const totalCnt = ref(props.totalCnt);//총 row 수
+const totalCnt = ref(props.rowItems.length);//총 row 수
 const totalPage = ref(0);//총 페이지 수
-const currPage = ref(0);// 현재 페이지 수
+const currPage = ref(1);// 현재 페이지 수
 const pageNum = ref([]);//페이지 버튼 생성
+
 
 const pageFirstNum = ref(0);//페이지네이션 첫번째 숫자
 
-const setTotalPage = computed({
-    set: () => {
+
+const onBtn = ref(false);
+
+const totalPageNum = computed({
+    get: () => {
         totalPage.value = Math.ceil(totalCnt.value / perNum.value);
     }
 })
 
-const setPageNum = computed({
-    set: () => {
-        let num = Math.ceil(totalPage / props.pageRange);
-        
-        for(let i = 1; i <= num; i++){
-            pageNum.value.push(i);
-        }
+const firstNum = computed({
+    get: () => {
+        pageFirstNum.value = (currPage.value - 1) * props.pageRange;
     }
 })
+
+const pageNumArr = computed({
+    get: () => {
+        let num = Array(totalPageNum.value).fill().map((_, i) => i);
+        pageNum.value = num.slice(firstNum.value, firstNum.value - 1);
+    }
+})
+
+console.log("pagNumArr::", totalPageNum.value);
+
 function setPerNum(e){
     perNum.value = e.target.currentValue;
 }
@@ -53,7 +68,7 @@ function moveFirstPage(){
 }
 
 function movePrevPage(){
-    currPage.value = currPage.value + 1;
+    currPage.value = currPage.value - 1;
 }
 
 function moveNextPage(){
@@ -61,13 +76,22 @@ function moveNextPage(){
 }
 
 function moveLastPage(){
-    currPage.value = setTotalPage;
+    currPage.value = totalPageNum;
 }
 
 function clickPageNum(e){
     currPage.value = e.target.nextSibling.innerText;
+    if(e.target.nextSibling.innerText === currPage.value){
+        onBtn.value = true;
+    }
+
+    let lastNum = (currPage * perNum) + ((currPage* perNum) + (perNum - 1));
+    rows.slice((currPage* perNum),  lastNum);
 }
 
+watch([rows, () => props.rowItems],( [newItems, newRows] ) => {
+    rows.value = newItems;
+})
 
 </script>
 
@@ -77,7 +101,11 @@ function clickPageNum(e){
             <button type="button" @click="moveFirstPage">&lt;</button>
             <button type="button" @click="movePrevPage">&lt;&lt;</button>
             <ul class="pagination">
-                <li v-for="num in pageNum" key="page{{ num }}" @click="clickPageNum($event)">
+                <li v-for="num in pageNumArr" 
+                    key="page{{ num }}" 
+                    @click="clickPageNum($event)"
+                    :class="{ on : onBtn }"
+                >
                     <a href="">{{num}}</a>
                 </li>
             </ul>
